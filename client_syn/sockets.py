@@ -1,4 +1,5 @@
-from lib.accounts import authentication as auth
+import auth
+import en_us
 
 import tornado.web
 import tornado.httpserver
@@ -12,7 +13,6 @@ import subprocess
 import threading
 import time
 import sys
-import en_us
 import os
 import json
 
@@ -37,7 +37,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
 
         auth_status = auth.verify(
             request['authentication']['client_id'], request['authentication']['token'])
-        if auth_status != 200:
+        if not auth_status:
             self.write_message(en_us.AUTH_FAILED)
             return
 
@@ -46,6 +46,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
                          request['log_command']]).start()
 
     def bind(self, command):
+        # will eventually become place for ZMQ binding point 
         asyncio.set_event_loop(asyncio.new_event_loop())
         p = subprocess.Popen(
             command, stdout=subprocess.PIPE, bufsize=1, shell=True)
@@ -68,6 +69,4 @@ def main():
     tornado.ioloop.IOLoop.instance().start()
 
 
-def run():
-    thread = threading.Thread(target=main, name="socket manager")
-    thread.start()
+main()

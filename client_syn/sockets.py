@@ -74,8 +74,7 @@ def main():
 
     # Setup HTTP Server
     ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    ssl_ctx.load_cert_chain("../../ssl/cert.crt", "../../ssl/domain.key")
-    http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_ctx)
+    http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(3142, "0.0.0.0")
 
     # Start IO/Event loop

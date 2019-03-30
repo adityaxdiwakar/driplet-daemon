@@ -14,11 +14,11 @@ import time
 import sys
 import os
 import json
-import zmq
 
-context = zmq.Context()
-socket = context.socket(zmq.PUB)
-socket.bind("tcp://127.0.0.1:9876")
+from zeroless import (Server, Client)
+
+pub = Server(port=12345).pub()
+
 
 class ChannelHandler(tornado.websocket.WebSocketHandler):
 
@@ -29,11 +29,10 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, message):
-        try:
-            data = json.load(message)
-        except:
-            self.write_message("Malformed request.")
-            return
+        data = json.loads(message)
+        #except:
+        #    self.write_message("Malformed request.")
+        #    return
 
         if "credentials" not in data or "payload" not in data:
             self.write_message("Malformed request.")    
@@ -48,7 +47,8 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             return
         
         else:
-            socket.send(data["payload"])
+            self.write_message("recv")
+            pub(data["payload"].encode('utf-8'))
 
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())

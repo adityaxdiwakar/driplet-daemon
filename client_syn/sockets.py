@@ -16,13 +16,15 @@ import sys
 import os
 import json
 
+from zeroless import (Client)
+
 class ChannelHandler(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin):
         return True
 
     def on_open(self):
-        pass
+        print("connection made")
 
     def on_message(self, message):
         try:
@@ -42,16 +44,19 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             return
 
         self.write_message("Authentication was successful.")
-        threading.Thread(target=self.bind, args=[
-                         request['log_command']]).start()
+        x = threading.Thread(target=self.bind, args=[
+                         request['log_command']])
+        x.start()
 
     def bind(self, command):
         # will eventually become place for ZMQ binding point 
         asyncio.set_event_loop(asyncio.new_event_loop())
-        p = subprocess.Popen(
-            command, stdout=subprocess.PIPE, bufsize=1, shell=True)
-        while True:
-            self.write_message(p.stdout.readline())
+        client = Client()
+        client.connect_local(port=9876)
+        listen = client.sub()
+        for item in listen:
+            self.write_message(item.decode('utf-8'))
+
 
 
 def main():

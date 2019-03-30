@@ -17,7 +17,7 @@ import json
 
 from zeroless import (Server, Client)
 
-pub = Server(port=12345).pub()
+pub = Server(port=9876).pub()
 
 
 class ChannelHandler(tornado.websocket.WebSocketHandler):

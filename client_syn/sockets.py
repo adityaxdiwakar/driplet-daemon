@@ -33,7 +33,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message("Malformed request.")
             return
 
-        if "authentication" not in request or "log_command" not in request:
+        if "authentication" not in request or "serviceid" not in request:
             self.write_message("Malformed request.")
             return
 
@@ -45,19 +45,18 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
 
         self.write_message("Authentication was successful.")
         x = threading.Thread(target=self.bind, args=[
-                         request['log_command']])
+                         request['serviceid']])
         x.start()
 
-    def bind(self, command):
-        # will eventually become place for ZMQ binding point 
+    def bind(self, serviceid):
         asyncio.set_event_loop(asyncio.new_event_loop())
         client = Client()
         client.connect_local(port=9876)
         listen = client.sub()
         for item in listen:
-            self.write_message(item.decode('utf-8'))
-
-
+            data = json.loads(item.decode('utf-8'))
+            if data["service_id"] == serviceid:
+                self.write_message(data["content"])
 
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())

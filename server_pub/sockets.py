@@ -48,7 +48,8 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         
         else:
             self.write_message("recv")
-            pub(data["payload"].encode('utf-8'))
+            packet = json.dumps(data["payload"])
+            pub(packet.encode('utf-8'))
 
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())

@@ -1,4 +1,5 @@
 import auth
+import db
 
 import tornado.web
 import tornado.httpserver
@@ -7,6 +8,7 @@ import tornado.websocket
 import tornado.options
 
 import functools
+import ssl
 import asyncio
 import subprocess
 import threading
@@ -50,6 +52,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message("recv")
             packet = json.dumps(data["payload"])
             pub(packet.encode('utf-8'))
+            db.update_log(data["payload"]["service_id"], data["payload"]["content"])            
 
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())
@@ -59,8 +62,10 @@ def main():
     ])
 
     # Setup HTTP Server
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(3143, "127.0.0.1")
+    ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_ctx.load_cert_chain("../../ssl/cert.crt", "../../ssl/domain.key")
+    http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_ctx)
+    http_server.listen(3143, "0.0.0.0")
 
     # Start IO/Event loop
     tornado.ioloop.IOLoop.instance().start()

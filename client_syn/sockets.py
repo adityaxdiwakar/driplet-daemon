@@ -1,5 +1,6 @@
 import auth
 import en_us
+import db
 
 import tornado.web
 import tornado.httpserver
@@ -13,6 +14,7 @@ import subprocess
 import threading
 import time
 import sys
+import ssl
 import os
 import json
 
@@ -44,6 +46,11 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             return
 
         self.write_message("Authentication was successful.")
+
+        logs = db.last_50(request['serviceid'])
+        for x in range(len(logs)):
+            self.write_message(logs[x])
+
         x = threading.Thread(target=self.bind, args=[
                          request['serviceid']])
         x.start()
@@ -66,8 +73,10 @@ def main():
     ])
 
     # Setup HTTP Server
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(3142, "127.0.0.1")
+    ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_ctx.load_cert_chain("../../ssl/cert.crt", "../../ssl/domain.key")
+    http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_ctx)
+    http_server.listen(3142, "0.0.0.0")
 
     # Start IO/Event loop
     tornado.ioloop.IOLoop.instance().start()

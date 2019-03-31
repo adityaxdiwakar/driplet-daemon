@@ -30,6 +30,9 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, message):
+        if message == "Ping":
+            return
+
         data = json.loads(message)
         #except:
         #    self.write_message("Malformed request.")

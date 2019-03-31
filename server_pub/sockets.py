@@ -21,7 +21,6 @@ from zeroless import (Server, Client)
 
 pub = Server(port=9876).pub()
 
-
 class ChannelHandler(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin):
@@ -47,13 +46,26 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         if not status:
             self.write_message("Authorization failed.")
             return
-        
+      
+        if data["payload"]["type"] == "Action Polling": 
+            threading.Thread(target=self.poll, args=[data["payload"]["service_id"]]).start()
+
         else:
             self.write_message("recv")
             packet = json.dumps(data["payload"])
             pub(packet.encode('utf-8'))
             db.update_log(data["payload"]["service_id"], data["payload"]["content"])            
-
+        
+    def poll(self, serviceid):
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        client = Client()
+        client.connect_local(port=35893)
+        listen = client.sub()
+        for item in listen:
+            data = json.loads(item.decode('utf-8'))
+            if data["serviceid"] == serviceid:
+                self.write_message(data["content"])
+        
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())
     # Create tornado application and supply URL routes

@@ -62,7 +62,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         listen = client.sub()
         for item in listen:
             data = json.loads(item.decode('utf-8'))
-            if data["service_id"] == serviceid:
+            if data["service_id"] == serviceid and db.is_dupe(serviceid, data["content"])
                 self.write_message(data["content"])
 
 def main():

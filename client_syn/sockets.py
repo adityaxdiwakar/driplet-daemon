@@ -63,7 +63,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         for item in listen:
             data = json.loads(item.decode('utf-8'))
             if data["service_id"] == serviceid and not db.is_dupe(serviceid, data["content"]):
-                self.write_message(data["content"])
+                self.write_message(data)
 
 def main():
     asyncio.set_event_loop(asyncio.new_event_loop())

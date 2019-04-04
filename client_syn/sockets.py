@@ -29,14 +29,25 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         print("connection made")
 
     def on_message(self, message):
+        MALFORMED_REQ = {
+            "type": "handshake",
+            "content": "Malformed request",
+            "service_id": None
+        }
+
+        AUTH_SUCCESS = {
+            "type": "handshake",
+            "content": "Authorization was successful",
+            "service_id": None
+        }
         try:
             request = json.loads(message)
         except:
-            self.write_message("Malformed request.")
+            self.write_message(MALFORMED_REQ)
             return
 
         if "authentication" not in request or "serviceid" not in request:
-            self.write_message("Malformed request.")
+            self.write_message(MALFORMED_REQ)
             return
 
         auth_status = auth.verify(
@@ -45,7 +56,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message(en_us.AUTH_FAILED)
             return
 
-        self.write_message("Authentication was successful.")
+        self.write_message(AUTH_SUCCESS)
 
         logs = db.last_50(request['serviceid'])
         for x in range(len(logs)):

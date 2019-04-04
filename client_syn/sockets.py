@@ -49,6 +49,11 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
 
         logs = db.last_50(request['serviceid'])
         for x in range(len(logs)):
+            tw = {
+                "service_id": request["serviceid"],
+                "content": logs[x],
+                "type": "Log Provider"
+            }
             self.write_message(logs[x])
 
         x = threading.Thread(target=self.bind, args=[

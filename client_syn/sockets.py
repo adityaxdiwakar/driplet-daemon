@@ -54,7 +54,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
                 "content": logs[x],
                 "type": "Log Provider"
             }
-            self.write_message(logs[x])
+            self.write_message(tw.decode('utf-8'))
 
         x = threading.Thread(target=self.bind, args=[
                          request['serviceid']])

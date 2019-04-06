@@ -50,6 +50,19 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message("Authorization failed.")
             return
       
+        clientid = data["credentials"]["client_id"]
+        serviceid = data["payload"]["service_id"]
+
+        service = requests.get(
+            f"https://api.driplet.cf/endpoints/{clientid}/services/{serviceid}",
+            headers = {
+                "authorization": data["credentials"]["token"]
+            }
+        )
+
+        if service.status_code != 200:
+            self.write_message("Authorization failed.")
+
         if data["payload"]["type"] == "Action Polling": 
             threading.Thread(target=self.poll, args=[data["payload"]["service_id"]]).start()
 

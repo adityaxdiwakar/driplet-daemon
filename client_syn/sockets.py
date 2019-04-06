@@ -10,6 +10,7 @@ import tornado.options
 
 import functools
 import asyncio
+import requests
 import subprocess
 import threading
 import time

@@ -56,6 +56,20 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message(en_us.AUTH_FAILED)
             return
 
+
+        clientid = request["authentication"]["client_id"]
+        serviceid = request["serviceid"]
+
+        service = requests.get(
+            f"https://api.driplet.cf/endpoints/{clientid}/services/{serviceid}",
+            headers = {
+                "authorization": request["authentication"]["token"]
+            }
+        )
+        
+        if service.status_code != 200:
+            return write.message(en_us.AUTH_FAILED)
+
         self.write_message(AUTH_SUCCESS)
 
         logs = db.last_50(request['serviceid'])

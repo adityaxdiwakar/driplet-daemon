@@ -55,7 +55,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         serviceid = data["payload"]["service_id"]
 
         service = requests.get(
-            f"https://api.driplet.cf/endpoints/{clientid}/services/{serviceid}",
+            f"http://localhost:3141/endpoints/{clientid}/services/{serviceid}",
             headers = {
                 "authorization": data["credentials"]["token"]
             }

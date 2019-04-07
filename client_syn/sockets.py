@@ -51,13 +51,6 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
             self.write_message(MALFORMED_REQ)
             return
 
-        auth_status = auth.verify(
-            request['authentication']['client_id'], request['authentication']['token'])
-        if not auth_status:
-            self.write_message(en_us.AUTH_FAILED)
-            return
-
-
         clientid = request["authentication"]["client_id"]
         serviceid = request["serviceid"]
 

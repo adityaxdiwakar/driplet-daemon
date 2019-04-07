@@ -42,15 +42,7 @@ class ChannelHandler(tornado.websocket.WebSocketHandler):
         if "credentials" not in data or "payload" not in data:
             self.write_message("Malformed request.")    
             return
-
-        status = auth.verify(
-            data["credentials"]["client_id"],
-            data["credentials"]["token"]
-        )
-        if not status:
-            self.write_message("Authorization failed.")
-            return
-      
+     
         clientid = data["credentials"]["client_id"]
         serviceid = data["payload"]["service_id"]
 

@@ -13,6 +13,7 @@ var broadcast = make(chan ServerPayload) // hand-off
 var upgrader = websocket.Upgrader{}
 
 func main() {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	http.HandleFunc("/ws/server", handleNewServers)
 	http.HandleFunc("/ws/client", handleNewClients)
 	go handleMessages()

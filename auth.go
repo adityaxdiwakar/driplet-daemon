@@ -8,7 +8,7 @@ import (
 )
 
 func auth(userID string, authToken string, serviceID string) bool {
-	authURL := fmt.Sprintf("http://api.driplet.tk/endpoints/%s/services", userID)
+	authURL := fmt.Sprintf("https://api.driplet.tk/endpoints/%s/services", userID)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", authURL, nil)

@@ -1,0 +1,1 @@
+go build -o daemon.bin *.go

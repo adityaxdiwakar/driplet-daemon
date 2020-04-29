@@ -39,3 +39,20 @@ type ClientResponse struct {
 	ServiceID string `json:"service_id"`
 	Log       string `json:"log"`
 }
+
+// APIServices struct from response
+type APIServices []struct {
+	MongoID struct {
+		Oid string `json:"$oid"`
+	} `json:"_id"`
+	Name           string   `json:"name"`
+	Description    string   `json:"description"`
+	StartCommand   string   `json:"start_command"`
+	StopCommand    string   `json:"stop_command"`
+	RestartCommand string   `json:"restart_command"`
+	StatusCommand  string   `json:"status_command"`
+	LogCommand     string   `json:"log_command"`
+	ID             string   `json:"id"`
+	AssociatedTo   string   `json:"associated_to"`
+	Logs           []string `json:"logs"`
+}

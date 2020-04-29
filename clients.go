@@ -25,6 +25,11 @@ func handleNewClients(w http.ResponseWriter, r *http.Request) {
 				session = Session{}
 				break
 			}
+			if !auth(authDetails.UserID, authDetails.AuthToken, authDetails.ServiceID) {
+				log.Printf("error: hack attempt, failed authorization")
+				session = Session{}
+				break
+			}
 			session.SID = authDetails.ServiceID
 			clients[session.SID] = append(clients[session.SID], session)
 		} else {

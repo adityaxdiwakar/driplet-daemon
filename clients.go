@@ -15,6 +15,7 @@ func handleNewClients(w http.ResponseWriter, r *http.Request) {
 	session := Session{
 		ws:  ws,
 		SID: "noAuth",
+		UID: "",
 	}
 	for {
 		if session.SID == "noAuth" {
@@ -31,7 +32,8 @@ func handleNewClients(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			session.SID = authDetails.ServiceID
-			clients[session.SID] = append(clients[session.SID], session)
+			session.UID = authDetails.UserID
+			clients[session.UID] = append(clients[session.UID], session)
 		} else {
 			var heartbeat HeartbeatMessage
 			err = session.ws.ReadJSON(&heartbeat)

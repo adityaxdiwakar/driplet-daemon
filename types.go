@@ -13,6 +13,7 @@ type Message struct {
 type Session struct {
 	ws  *websocket.Conn
 	SID string
+	UID string
 }
 
 // ServerAuthRequest for when server authenticates
@@ -27,6 +28,7 @@ type ServerPayload struct {
 	Heartbeat bool   `json:"heartbeat"`
 	ServiceID string `json:"service_id"`
 	Log       string `json:"log"`
+	UserID    string `json:"user_id"`
 }
 
 // HeartbeatMessage to be sent back in case of heartbeat

@@ -29,7 +29,7 @@ func handleMessages() {
 		// Grab the next message from the broadcast channel
 		msg := <-broadcast
 		// Send it out to every client that is currently connected
-		directedSessions := clients[msg.ServiceID]
+		directedSessions := clients[msg.UserID]
 		for _, session := range directedSessions {
 			err := session.ws.WriteJSON(ClientResponse{
 				ServiceID: msg.ServiceID,
